@@ -7,7 +7,7 @@
 ## 제어 컴포넌트(Controlled Component)
 
 - 제어 컴포넌트: React로 값을 제어하는 입력 폼 엘리먼트
-- React state를 ‘신뢰 가능한 단일 출처’로 만들기 → React 컴포넌트가 폼에 발생하는 사용자 입력값을 제어
+- React state를 ‘단일 진실 공급원’(single source of truth)으로 만들기 → React 컴포넌트가 폼에 발생하는 사용자 입력값을 제어
   - 사용자 입력 수정(예: 자동 대문자화)이나 유효성 검사가 간단해짐
 
 ## `<textarea>`
