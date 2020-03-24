@@ -20,24 +20,25 @@ class Board extends React.Component {
     />);
   }
 
+  // Idea 3
+  // NOTE: Can make it immutable? (without using Array.prototype.push())
+  renderSquares() {
+    let rows = [];
+    for (let r = 0; r < 3; r += 1) {
+      let row = [];
+      for (let c = 0; c < 3; c += 1) {
+        row.push(this.renderSquare(r * 3 + c));
+      }
+      rows.push(<div className="board-row">{row}</div>);
+    }
+    return rows;
+  }
+
   render() {
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        {/* Idea 3 */}
+        {this.renderSquares()}
       </div>
     );
   }
