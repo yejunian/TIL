@@ -48,7 +48,8 @@ class Game extends React.Component {
     super(props);
     this.state = {
       history: [{
-        squares: Array(9).fill(null)
+        squares: Array(9).fill(null),
+        coord: null // Idea 1
       }],
       stepNumber: 0,
       xIsNext: true
@@ -65,7 +66,8 @@ class Game extends React.Component {
     squares[i] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
       history: history.concat([{
-        squares: squares
+        squares: squares,
+        coord: [Math.floor(i / 3), i % 3] // Idea 1
       }]), // .concat() returns a new array without changing the existing arrays
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext
@@ -84,11 +86,17 @@ class Game extends React.Component {
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
+    // Array.prototype.map()의 callback의 매개 변수
+    // 1. 처리할 현재 요소
+    // 2. 처리할 현재 요소의 인덱스
+    // 3. map()을 호출한 배열(복사본이 아니라 동일한 배열)
     const moves = history.map((step, move) => {
       const desc = move ? `Go to move #${move}` : 'Go to game start';
       return (
         <li key={move}>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          {/* Idea 1 */}
+          {!step.coord ? '' : ` (${step.coord[0]},${step.coord[1]})`}
         </li>
       )
     });
