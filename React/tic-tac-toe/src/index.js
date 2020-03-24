@@ -94,7 +94,10 @@ class Game extends React.Component {
       const desc = move ? `Go to move #${move}` : 'Go to game start';
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <button onClick={() => this.jumpTo(move)}>
+            {/* Idea 2 */}
+            {move === this.state.stepNumber ? <b>{desc}</b> : desc}
+          </button>
           {/* Idea 1 */}
           {!step.coord ? '' : ` (${step.coord[0]},${step.coord[1]})`}
         </li>
