@@ -54,7 +54,8 @@ class Game extends React.Component {
         coord: null // Idea 1
       }],
       stepNumber: 0,
-      xIsNext: true
+      xIsNext: true,
+      laterFirst: false // Idea 4
     }
   }
 
@@ -92,7 +93,7 @@ class Game extends React.Component {
     // 1. 처리할 현재 요소
     // 2. 처리할 현재 요소의 인덱스
     // 3. map()을 호출한 배열(복사본이 아니라 동일한 배열)
-    const moves = history.map((step, move) => {
+    let moves = history.map((step, move) => { // Idea 4: const -> let
       const desc = move ? `Go to move #${move}` : 'Go to game start';
       return (
         <li key={move}>
@@ -105,6 +106,10 @@ class Game extends React.Component {
         </li>
       )
     });
+    // Idea 4
+    if (this.state.laterFirst) {
+      moves.reverse();
+    }
 
     let status;
     if (winner) {
@@ -124,6 +129,12 @@ class Game extends React.Component {
         <div className="game-info">
           <div>{status}</div>
           <ol>{moves}</ol>
+          {/* Idea 4 */}
+          <div>
+            <button onClick={() => this.setState({laterFirst: !this.state.laterFirst}) }>
+              Show {this.state.laterFirst ? "earlier" : "later"} record first
+            </button>
+          </div>
         </div>
       </div>
     );
