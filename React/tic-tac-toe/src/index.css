@@ -36,6 +36,11 @@ ol, ul {
   outline: none;
 }
 
+/* Idea 5 */
+.square-cause {
+  background: #ff0;
+}
+
 .kbd-navigation .square:focus {
   background: #ddd;
 }

@@ -5,30 +5,42 @@ import './index.css';
 
 function Square(props) {
   return (
-    <button className="square" onClick={props.onClick}>
+    <button
+      className={`square${props.isCause ? ' square-cause' : ''}`} // Idea 5
+      onClick={props.onClick}
+    >
       {props.value}
     </button>
   );
 }
 
 class Board extends React.Component {
-  renderSquare(i) {
+  renderSquare(i, isCause) {
     return (
     <Square
       key={i} // Idea 3
       value={this.props.squares[i]}
+      isCause={isCause} // Idea 5
       onClick={() => this.props.onClick(i)}
     />);
   }
 
-  // Idea 3
-  // NOTE: Can make it immutable? (without using Array.prototype.push())
   renderSquares() {
+    // Idea 5
+    const isCause = Array(9).fill(false);
+    if (this.props.cause) {
+      for (const square of this.props.cause) {
+        isCause[square] = true;
+      }
+    }
+
+    // Idea 3
     let rows = [];
     for (let r = 0; r < 3; r += 1) {
       let row = [];
       for (let c = 0; c < 3; c += 1) {
-        row.push(this.renderSquare(r * 3 + c));
+        const i = r * 3 + c;
+        row.push(this.renderSquare(i, isCause[i]));
       }
       rows.push(<div key={r} className="board-row">{row}</div>);
     }
@@ -113,7 +125,7 @@ class Game extends React.Component {
 
     let status;
     if (winner) {
-      status = `Winner: ${winner}`;
+      status = `Winner: ${winner.shape}`;
     } else {
       status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
     }
@@ -123,6 +135,7 @@ class Game extends React.Component {
         <div className="game-board">
           <Board
             squares={current.squares}
+            cause={winner && winner.cause} // Idea 5
             onClick={(i) => this.handleClick(i)}
           />
         </div>
@@ -155,7 +168,10 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i += 1) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return {
+        shape: squares[a],
+        cause: lines[i] // Idea 5
+      };
     }
   }
   return null;
