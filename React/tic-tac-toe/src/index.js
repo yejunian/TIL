@@ -67,7 +67,7 @@ class Game extends React.Component {
       }],
       stepNumber: 0,
       xIsNext: true,
-      laterFirst: false // Idea 4
+      laterHistoryFirst: false // Idea 4
     }
   }
 
@@ -119,7 +119,7 @@ class Game extends React.Component {
       )
     });
     // Idea 4
-    if (this.state.laterFirst) {
+    if (this.state.laterHistoryFirst) {
       moves.reverse();
     }
 
@@ -146,8 +146,8 @@ class Game extends React.Component {
           <ol>{moves}</ol>
           {/* Idea 4 */}
           <div>
-            <button onClick={() => this.setState({laterFirst: !this.state.laterFirst}) }>
-              Show {this.state.laterFirst ? "earlier" : "later"} record first
+            <button onClick={() => this.setState({laterHistoryFirst: !this.state.laterHistoryFirst}) }>
+              Show {this.state.laterHistoryFirst ? "earlier" : "later"} record first
             </button>
           </div>
         </div>
