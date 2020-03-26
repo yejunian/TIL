@@ -126,6 +126,8 @@ class Game extends React.Component {
     let status;
     if (winner) {
       status = `Winner: ${winner.shape}`;
+    } else if (this.state.stepNumber === 9) { // Idea 6
+      status = 'Draw';
     } else {
       status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
     }
