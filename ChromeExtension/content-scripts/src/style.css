@@ -1,0 +1,11 @@
+.myContent {
+  border: 5px solid #f80;
+  background-color: #08f;
+  color: #fff;
+  font-size: 100px;
+  padding: 25px 50px;
+  position: fixed;
+  top: 100px;
+  left: 100px;
+  z-index: 999999999;
+}

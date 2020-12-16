@@ -1,0 +1,6 @@
+{
+  "name": "content-scripts",
+  "version": "1.0.0",
+  "description": "Build an Extension!",
+  "main": "src/index.js"
+}
