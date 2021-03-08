@@ -102,4 +102,29 @@ $ gatsby serve
 
 [https://www.gatsbyjs.com/docs/tutorial/part-two/](https://www.gatsbyjs.com/docs/tutorial/part-two/)
 
+## 글로벌 스타일
+
+- 글로벌 스타일은 `src/styles/global.css` 파일을 작성하고 프로젝트 루트의 `gatsby-browser.js`에 `./src/styles/global.css`를 임포트하여 반영할 수 있다.
+
+```jsx
+require('./src/styles/global.css');
+```
+
+## 컴포넌트 스코프 CSS
+
+- [CSS 모듈](https://github.com/css-modules/css-modules)을 사용한다.
+- CSS를 작성하려는 컴포넌트와 같은 디렉터리에 `{component-name}.module.css` 파일을 작성하고, 해당 컴포넌트(`{component-name}.jsx`)에 다음과 같이 CSS를 임포트한다.
+
+```jsx
+import * as styles from './{component-name}.module.css';
+```
+
+- 이후 `styles.{class-name}`으로 CSS에 정의된 클래스명을 가져올 수 있다.
+
+---
+
+# 3. Creating Nested Layout Components
+
+[https://www.gatsbyjs.com/docs/tutorial/part-three/](https://www.gatsbyjs.com/docs/tutorial/part-three/)
+
 계속...
