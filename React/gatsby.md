@@ -127,4 +127,44 @@ import * as styles from './{component-name}.module.css';
 
 [https://www.gatsbyjs.com/docs/tutorial/part-three/](https://www.gatsbyjs.com/docs/tutorial/part-three/)
 
+- 레이아웃 컴포넌트: 여러 페이지에 공통적으로 들어가는, 사이트의 구역
+  - 예: header, footer, 사이드바, 탐색 메뉴
+
+## 패턴
+
+```jsx
+// src/components/layout.jsx
+export default function Layout({ children }) {
+	return (
+		<div { ...someProps }>
+			<ComponentsBeforeChildren />
+			{children}
+		  <ComponentsAfterChildren />
+    </div>
+  );
+};
+```
+
+```jsx
+// src/pages/index.jsx
+export default function Home() {
+	return (
+		<Layout>
+			<h1>Lorem Ipsum</h1>
+			<p>
+				Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+			</p>
+		</Layout>
+	);
+};
+```
+
+레이아웃 컴포넌트를 다중으로 감쌀 수도 있을 듯. (전체 레이아웃, 게시물 레이아웃, 게시물)
+
+---
+
+# 4. Data in Gatsby
+
+[https://www.gatsbyjs.com/docs/tutorial/part-four/](https://www.gatsbyjs.com/docs/tutorial/part-four/)
+
 계속...
