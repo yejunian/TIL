@@ -135,11 +135,11 @@ import * as styles from './{component-name}.module.css';
 ```jsx
 // src/components/layout.jsx
 export default function Layout({ children }) {
-	return (
-		<div { ...someProps }>
-			<ComponentsBeforeChildren />
-			{children}
-		  <ComponentsAfterChildren />
+  return (
+    <div { ...someProps }>
+      <ComponentsBeforeChildren />
+      {children}
+      <ComponentsAfterChildren />
     </div>
   );
 };
@@ -148,14 +148,14 @@ export default function Layout({ children }) {
 ```jsx
 // src/pages/index.jsx
 export default function Home() {
-	return (
-		<Layout>
-			<h1>Lorem Ipsum</h1>
-			<p>
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-			</p>
-		</Layout>
-	);
+  return (
+    <Layout>
+      <h1>Lorem Ipsum</h1>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
+    </Layout>
+  );
 };
 ```
 
@@ -166,5 +166,130 @@ export default function Home() {
 # 4. Data in Gatsby
 
 [https://www.gatsbyjs.com/docs/tutorial/part-four/](https://www.gatsbyjs.com/docs/tutorial/part-four/)
+
+- Gatsby의 데이터 레이어는 GraphQL로 구동된다. [How to GraphQL](https://www.howtographql.com/)
+- 비구조적 데이터 vs GraphQL: 꼭 GraphQL을 쓸 필요는 없고, 작은 규모에서는 비구조적 데이터를 써도 괜찮다.
+
+## 데이터 입력
+
+- `gatsby-config.js`의 `module.exports.siteMetadata`에 데이터를 입력한다.
+  - 데이터로 뭐가 들어갈 수 있는지는 GraphiQL 참고
+
+```jsx
+module.exports = {
+  siteMetadata: {
+    title: 'Lorem Ipsum',
+  },
+};
+```
+
+## 데이터 쿼리 및 사용
+
+- 페이지 컴포넌트에 쿼리를 추가하고, 컴포넌트의 `props.data.site.siteMetadata`를 활용할 수 있다.
+  - 어떤 쿼리를 할 수 있는지는 GraphiQL 참고
+
+```jsx
+import { graphql } from 'gatsby';
+
+export default function Component({ data }) {
+  return (
+    <div>
+      <h1>{data.site.siteMetadata.title}</h1>
+      <p>You can see the title you wrote on gatsby-config.js</p>
+    </div>
+  );
+};
+
+export const query = graphql`
+  query {
+    site {
+      siteMetadata {
+        title
+      }
+    }
+  }
+`;
+```
+
+## StaticQuery 사용하기
+
+- 페이지가 아닌 컴포넌트(예: `Layout`)에서 GraphQL 쿼리로 데이터를 가져오는 방법: StaticQuery
+  - `useStaticQuery` hook 사용
+
+```jsx
+import { useStaticQuery, graphql } from 'gatsby';
+
+export default function Layout({ children }) {
+  const data = useStaticQuery(graphql`
+    query {
+      site {
+        siteMetadata {
+          title
+        }
+      }
+    }
+  `);
+  return (
+    <div>
+      <h1>{data.site.siteMetadata.title}</h1>
+    </div>
+  );
+};
+```
+
+---
+
+# 5. Source Plugins and Rendering Queried Data
+
+[https://www.gatsbyjs.com/docs/tutorial/part-five/](https://www.gatsbyjs.com/docs/tutorial/part-five/)
+
+## Source Plugins (`gatsby-source-filesystem` 예제)
+
+- `gatsby-source-filesystem` 설치
+
+```plaintext
+$ yarn add gatsby-source-filesystem
+```
+
+- `gatsby-config.js`의 `module.exports.plugins`에 플러그인 추가
+
+```javascript
+module.exports = {
+  plugins: [
+    {
+      resolve: 'gatsby-source-filesystem',
+      options: {
+        name: 'src',
+        path: `${__dirname}/src/`,
+      },
+    },
+  ],
+};
+```
+
+- Gatsby 개발 서버를 재실행하고 GraphiQL을 다시 열면 쿼리 목록에서 `addFile`과 `file`을 확인할 수 있다.
+- 파일의 어떤 정보를 가져올 수 있는지는 GraphiQL 열어서 참고
+
+### 모든 파일 정보 가져오기
+
+- 아래의 쿼리로 모든 파일 정보를 가져올 수 있다.
+
+```graphql
+query {
+  allFile {
+    edges {
+      node {
+        (가져오려는 정보)
+      }
+    }
+  }
+}
+```
+
+---
+
+# 6. Transformer Plugins
+
+[https://www.gatsbyjs.com/docs/tutorial/part-six/](https://www.gatsbyjs.com/docs/tutorial/part-six/)
 
 계속...
