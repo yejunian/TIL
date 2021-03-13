@@ -1,6 +1,13 @@
 # Gatsby
 
-# 0. 개발 환경 구성
+# 공식 튜토리얼 구성
+
+- 0: 개발 환경 구성
+- 1-3: 페이지, 컴포넌트, 레이아웃
+- 4-7: 데이터 레이어
+- 8: 빌드, 배포 준비
+
+# 0. Set Up Your Development Environment
 
 [https://www.gatsbyjs.com/docs/tutorial/part-zero/](https://www.gatsbyjs.com/docs/tutorial/part-zero/)
 
@@ -291,5 +298,105 @@ query {
 # 6. Transformer Plugins
 
 [https://www.gatsbyjs.com/docs/tutorial/part-six/](https://www.gatsbyjs.com/docs/tutorial/part-six/)
+
+- Source plugin만으로는 데이터를 가져오는 데 한계가 있다.
+  - 예: `gatsby-source-filesystem` 플러그인으로는 파일 목록은 가져올 수 있지만 내용을 가져오지는 못한다.
+- Transformer plugin: Source plugin으로 가져온 내용을 변형하는 플러그인
+  - Source plugin에서 가져온 데이터를 사용 가능하도록 가공한다.
+
+## `gatsby-transformer-remark` 예제(Markdown)
+
+- `gatsby-transformer-remark` 설치
+
+```
+$ yarn add gatsby-transformer-remark
+```
+
+- `gatsby-config.js`에 플러그인 추가
+
+```jsx
+module.exports = {
+  plugins: [
+    {
+      resolve: 'gatsby-source-filesystem',
+      options: {
+        name: 'src',
+        path: `${__dirname}/src/`,
+      },
+    },
+    'gatsby-transformer-remark',
+  ],
+};
+```
+
+- Markdown 문서 작성: `src/pages/lorem-ipsum.md`
+- 이후 아래의 쿼리로 모든 Markdown 파일의 정보와 내용을 가져올 수 있다.
+  - 배열을 정렬하려면 아래와 같이 `sort` 옵션을 준다.
+
+```graphql
+query {
+  allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }) {
+    edges {
+      node {
+        (가져오려는 정보)
+      }
+    }
+  }
+}
+```
+
+- 이를 이용하여 모든 글의 정보를 표시하는 메인 페이지 `src/pages/index.js` 예제(`siteMetadata`와 `frontmatter`의 구조는 앞서 진행한 내용과 동일하다고 가정한다.)
+
+```jsx
+import { graphql } from 'gatsby';
+
+export default function Home({ data }) {
+  return (
+    <>
+      <header>
+        <h1>{data.site.siteMetadata.title}</h1>
+      </header>
+      <main>
+        <h2>{data.allMarkdownRemark.totalCount} Posts</h2>
+        {data.allMarkdownRemark.edges.map(({ node }) => (
+          <div key={node.id}>
+            <h3>[{node.frontmatter.date}] {node.frontmatter.title}</h3>
+            <p>{node.excerpt}</p>
+          </div>
+        ))}
+      </main>
+    </>
+  );
+};
+
+export const query = graphql`
+  query {
+    site {
+      siteMetadata {
+        title
+      }
+    }
+    allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }) {
+      totalCount
+      edges {
+        node {
+          id
+          frontmatter {
+            title
+            date(formatString: "YYYY-MM-DD")
+          }
+          excerpt
+        }
+      }
+    }
+  }
+`;
+```
+
+---
+
+# 7. Programmatically Create Pages from Data
+
+[https://www.gatsbyjs.com/docs/tutorial/part-seven/](https://www.gatsbyjs.com/docs/tutorial/part-seven/)
 
 계속...
