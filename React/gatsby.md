@@ -399,4 +399,76 @@ export const query = graphql`
 
 [https://www.gatsbyjs.com/docs/tutorial/part-seven/](https://www.gatsbyjs.com/docs/tutorial/part-seven/)
 
+- 데이터로 페이지를 프로그래밍으로(programmatically) 생성하는 방법
+- 쿼리 결과(데이터)를 페이지로 매핑한다. (“query your *data* and *map* the query results to *pages*”)
+
+## 페이지의 Slug 만들기
+
+- Slug: 웹 주소의 고유한 식별부. URL에서 호스트 이후의 부분. Path라고도 한다.
+  - `https://www.gatsbyjs.com/docs/tutorial/part-seven/`의 `/docs/tutorial/part-seven`
+- 새 페이지 만드는 방법 2단계
+  1. 페이지의 slug 생성
+  2. 페이지 생성
+  - `onCreateNode`, `createPages` 사용: `gatsby-node.js`에서 함수를 작성하여 해당 이름으로 내보낸다. Gatsby는 노드가 추가·변경될 때 이 함수를 호출한다.
+
+```jsx
+const { createFilePath } = require('gatsby-source-filesystem');
+
+exports.onCreateNode = ({ node, getNode, actions }) => {
+  const { createNodeField } = actions;
+  if (node.internal.type === 'MarkdownRemark') {
+    const slug = createFilePath({ node, getNode, basePath: 'pages' });
+    createNodeField({
+      node,
+      name: 'slug',
+      value: slug,
+    });
+  }
+};
+```
+
+## 페이지 만들기
+
+직접 해 봐야 알 것 같음.
+
+- `gatsby-node.js`에 아래 내용을 추가한다.
+  - 페이지를 생성할 때 `context.slug`를 세팅하는 이유는, 페이지 쿼리에서 GraphQL 변수로 사용할 수 있게 하기 위해서다.
+
+```jsx
+const path = require('path');
+
+exports.createPages = async ({ graphql, actions }) => {
+  const { createPage } = actions;
+  const result = await graphql(`
+    query {
+      allMarkdownRemark {
+        edges {
+          node {
+            fields {
+              slug
+            }
+          }
+        }
+      }
+    }
+  `);
+
+  result.data.allMarkdownRemark.edges.forEach(({ node }) => {
+    createPage({
+      path: node.fields.slug,
+      component: path.resolve('./src/templates/blog-post.js'),
+      context: {
+        slug: node.fields.slug,
+      },
+    });
+  });
+}
+```
+
+---
+
+# 추가 참고 자료
+
+- [https://www.gatsbyjs.com/docs/how-to/routing/adding-markdown-pages/#create-static-pages-using-gatsbys-nodejs-createpage-api](https://www.gatsbyjs.com/docs/how-to/routing/adding-markdown-pages/#create-static-pages-using-gatsbys-nodejs-createpage-api)
+
 계속...
