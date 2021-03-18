@@ -308,7 +308,7 @@ query {
 
 - `gatsby-transformer-remark` 설치
 
-```
+```plaintext
 $ yarn add gatsby-transformer-remark
 ```
 
@@ -518,7 +518,7 @@ How-to Guides → Routing and Pages → How to add content using Markdown
 
 - `gatsby-source-filesystem` 설치
 
-```
+```plaintext
 $ yarn add gatsby-source-filesystem
 ```
 
@@ -542,7 +542,7 @@ module.exports = {
 
 - `gatsby-transformer-remark` 설치
 
-```
+```plaintext
 $ yarn add gatsby-transformer-remark
 ```
 
