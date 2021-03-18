@@ -260,7 +260,7 @@ $ yarn add gatsby-source-filesystem
 
 - `gatsby-config.js`의 `module.exports.plugins`에 플러그인 추가
 
-```javascript
+```jsx
 module.exports = {
   plugins: [
     {
@@ -429,10 +429,8 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
 
 ## 페이지 만들기
 
-직접 해 봐야 알 것 같음.
-
 - `gatsby-node.js`에 아래 내용을 추가한다.
-  - 페이지를 생성할 때 `context.slug`를 세팅하는 이유는, 페이지 쿼리에서 GraphQL 변수로 사용할 수 있게 하기 위해서다.
+  - context에 전달된 데이터는 페이지 쿼리에서 GraphQL 변수로 사용할 수 있다. (여기서는 `allMarkdownRemark.edges.node.fields.slug`)
 
 ```jsx
 const path = require('path');
@@ -465,10 +463,197 @@ exports.createPages = async ({ graphql, actions }) => {
 }
 ```
 
+## 템플릿 만들기
+
+- `gatsby-node.js`의 `createPage` 함수의 `component` 옵션으로 들어가는 템플릿을 만든다.
+
+```jsx
+import React from "react";
+import { Link, graphql } from "gatsby";
+
+export default function BlogArticle({ data }) {
+  const post = data.markdownRemark;
+
+  return (
+    <div>
+      <Link to="/">Home</Link>
+      <h1>{post.frontmatter.title}</h1>
+      <div dangerouslySetInnerHTML={{ __html: post.html }} />
+    </div>
+  );
+};
+
+export const query = graphql`
+  query($slug: String!) {
+    markdownRemark(fields: { slug: { eq: $slug } }) {
+      html
+      frontmatter {
+        title
+      }
+    }
+  }
+`;
+```
+
 ---
 
-# 추가 참고 자료
+# [추가 자료] Adding Markdown Pages
 
-- [https://www.gatsbyjs.com/docs/how-to/routing/adding-markdown-pages/#create-static-pages-using-gatsbys-nodejs-createpage-api](https://www.gatsbyjs.com/docs/how-to/routing/adding-markdown-pages/#create-static-pages-using-gatsbys-nodejs-createpage-api)
+How-to Guides → Routing and Pages → How to add content using Markdown
+
+[https://www.gatsbyjs.com/docs/how-to/routing/adding-markdown-pages/](https://www.gatsbyjs.com/docs/how-to/routing/adding-markdown-pages/)
+
+- 어째 How-to Guides 문서가 튜토리얼보다 나은 듯. 이 문서만 해도 튜토리얼 파트 5-7의 내용이 모두 들어가 있다.
+- 튜토리얼 파트 7에서는 slug를 `basePath` 아래의 경로에서 뽑아 오는데, 이 문서에서는 마크다운 파일의 frontmatter에서 가져옴.
+
+## 순서
+
+1. 파일시스템에서 Gatsby로 파일 읽어오기
+2. 마크다운을 HTML로, frontmatter를 데이터로 변환
+3. 마크다운 파일 추가
+4. 마크다운 파일을 표시할 페이지 컴포넌트 작성
+5. Gatsby의 Node.js `createPage` API로 정적 페이지 생성
+
+## 1. 파일시스템에서 Gatsby로 파일 읽어오기
+
+- `gatsby-source-filesystem` 설치
+
+```
+$ yarn add gatsby-source-filesystem
+```
+
+- `gatsby-config.js`의 `module.exports.plugins`에 플러그인 추가
+
+```jsx
+module.exports = {
+  plugins: [
+    {
+      resolve: 'gatsby-source-filesystem',
+      options: {
+        name: 'markdown-pages',
+        path: `${__dirname}/src/markdown-pages`, // 불러올 파일이 있는 디렉터리
+      },
+    },
+  ],
+};
+```
+
+## 2. 마크다운을 HTML로, frontmatter를 데이터로 변환
+
+- `gatsby-transformer-remark` 설치
+
+```
+$ yarn add gatsby-transformer-remark
+```
+
+- `gatsby-config.js`에 플러그인 추가
+
+```jsx
+module.exports = {
+  plugins: [
+    {
+      resolve: 'gatsby-source-filesystem',
+      options: {
+        name: 'markdown-pages',
+        path: `${__dirname}/src/markdown-pages`,
+      },
+    },
+    'gatsby-transformer-remark', // 요거
+  ],
+};
+```
+
+## 3. 마크다운 파일 추가
+
+- `src/markdown-pages` 디렉터리에 마크다운 파일 작성
+  - Frontmatter는 YAML 문법에 따라 작성한다.
+  - 여기서, slug frontmatter가 중요하다.
+- `src/articles/2021/03/18/lorem-ipsum.md`
+
+```markdown
+---
+slug: /article/2021/03/18/lorem-ipsum
+date: 2021-03-18
+title: Lorem Ipsum
+---
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+```
+
+## 4. 마크다운 파일을 표시할 페이지 컴포넌트 작성
+
+- `src/templates` 디렉터리 아래에 템플릿 JSX 파일 작성
+- `src/templates/blog-article.jsx`
+
+```jsx
+import React from 'react';
+import { graphql } from 'gatsby';
+
+export default function BlogArticle({ data }) {
+  const { markdownRemark } = data;
+  const { frontmatter, html } = markdownRemark;
+
+  return (
+    <div>
+      <h1>{frontmatter.title}</h1>
+      <h2>{frontmatter.date}</h2>
+      <div dangerouslySetInnerHTML={{ __html: html }} />
+    </div>
+  );
+};
+
+export const query = graphql`
+  query($slug: String!) {
+    markdownRemark(frontmatter: { slug: { eq: $slug } }) {
+      html
+      frontmatter {
+        date(formatString: "YYYY-MM-DD")
+        slug
+        title
+      }
+    }
+  }
+`;
+```
+
+## 5. Gatsby의 Node.js `createPage` API로 정적 페이지 생성
+
+```jsx
+exports.createPages = async ({ actions, graphql, reporter }) => {
+  const { createPage } = actions;
+  const blogPostTemplate = require.resolve('./src/templates/blog-article.jsx');
+  const result = await graphql(`
+    {
+      allMarkdownRemark(sort: { order: DESC, fields: [frontmatter___date] }) {
+        edges {
+          node {
+            frontmatter {
+              slug
+            }
+          }
+        }
+      }
+    }
+  `);
+
+  if (result.errors) {
+    reporter.panicOnBuild('Error while running GraphQL query.');
+    return;
+  }
+
+  result.data.allMarkdownRemark.edges.forEach(({ node }) => {
+    createPage({
+      path: node.frontmatter.slug,
+      component: blogPostTemplate,
+      context: {
+        slug: node.frontmatter.slug,
+      }
+    });
+  });
+};
+```
+
+---
+
+# 8. Preparing a Site to Go Live
 
 계속...
