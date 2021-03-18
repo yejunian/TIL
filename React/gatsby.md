@@ -651,9 +651,3 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
   });
 };
 ```
-
----
-
-# 8. Preparing a Site to Go Live
-
-계속...
