@@ -22,7 +22,6 @@
 
 ## API 및 예시
 
-- [직접 작성해 본 예시 링크](https://github.com/leeye51456/TIL/tree/master/React/context)
 - React 공식 문서 &gt; 고급 안내서 &gt; Context의 [API](https://ko.reactjs.org/docs/context.html#api) 문단과 [예시](https://ko.reactjs.org/docs/context.html#examples) 문단 참고
 
 -----
